@@ -8,16 +8,531 @@
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="dist/theme/solarized.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+        <style type="text/css">
+            /* 1. Style header/footer <div> so they are positioned as desired. */
+            #header-left {
+                position: absolute;
+                top: 2%;
+                left: 2%;
+                font-size: .7em;
+            }
+            #header-right {
+                position: absolute;
+                top: 2%;
+                right: 2%;
+                font-size: .7em;
+            }
+            #footer-left {
+                position: absolute;
+                bottom: 2%;
+                left: 2%;
+                font-size: .7em;
+            }
+        </style>
 	</head>
 	<body>
+
+    <!-- 2. Create hidden header/footer <div> -->
+    <div id="hidden" style="display:none;">
+        <div id="header">
+            <div id="header-left">FOSDEM24</div>
+            <div id="header-right" style="color: #ccc">Juggling with UIDs and GIDs</div>
+            <div id="footer-left">Nicola Sella - <a
+                    style="color: #ccc;" href="https://creativecommons.org/publicdomain/zero/1.0/">distributed under CC0 1.0</a></div>
+        </div>
+    </div>
+
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+                    <h3>Juggling with UIDs and GIDs</h3>
+                    <h5>rootless container deployment with Ansible</h5>
+                    <p><small>Nicola Sella</small></p>
+                </section>
+				<section>
+                    <section>
+                        <h3>Motivation</h3>
+                        <ul>
+                            <li class="fragment fade-left">Experimenting with rootles containers in my home-server</li>
+                            <li class="fragment fade-left">Automating using Ansible. It's not an overkill</li>
+                            <li class="fragment fade-left">Breaking your stuff is a <s>terrible</s> great way to learn</li>
+                        </ul>
+                    </section>
+				    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h3>Meet my home-server</h3>
+                        <h5><code>morla@morla</code></h5>
+                    </section>
+				    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>morla@morla</code></h5>
+                        <img src="img/morla.jpg">
+                    </section>
+				    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>morla@morla</code></h5>
+                        <img src="img/morla.jpg">
+                        <ul>
+                            <li>It remembers everything</li>
+                            <li>It is heavy and dusty</li>
+                            <li>It is a turtle</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>Portainer</h3>
+                        <img data-src="img/portainer.png"/>
+                    </section>
+                    <section>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fragment fade-right">Easy installation<span class="fragment fade-in">?</span></td>
+                                <td class="fragment fade-left">...in some systems</td>
+                            </tr>
+                            <tr>
+                                <td class="fragment fade-right">Supports Docker</td>
+                                <td class="fragment fade-left">Only (at the time)</td>
+                            </tr>
+                            <tr>
+                                <td class="fragment fade-right">Nice GUI</td>
+                                <td class="fragment fade-left">Heavily dependent on GUI</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>Move away... but where?</h3>
+                    </section>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Requirements</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fragment fade-right">Easy installation</td>
+                                    <td class="fragment fade-left">Ansible</td>
+                                </tr>
+                                <tr>
+                                    <td class="fragment fade-right">Rootless</td>
+                                    <td class="fragment fade-left">Podman</td>
+                                </tr>
+                                <tr>
+                                    <td class="fragment fade-right">Not GUI dependent</td>
+                                    <td class="fragment fade-left">well...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>All good, let's set it up...</h3>
+                        <h5 class="fragment fade-right">...but there is one more thing</h5>
+                    </section>
+                    <section>
+                        <h5 data-id="code-title">Linuxserver.io images often have a setup that looks like this</h5>
+                        <pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|7,8" >
+                        ---
+                        services:
+                          jellyfin:
+                            image: lscr.io/linuxserver/jellyfin:latest
+                            container_name: jellyfin
+                            environment:
+                              - PUID=1000
+                              - PGID=1000
+                              - TZ=Etc/UTC
+                            volumes:
+                              -  ...
+                            ports:
+                              - ...
+                        </code></pre>
+                        <h5 class="fragment fade-down">Why is that?</h5>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h5>If we run podman with the same docker-compose files we see this</h5>
+                        <pre data-id="code-animation"><code>
+[morla@morla ~]$ ls -l ~/Config
+...
+drwxr-xr-x.  8 morla  morla   103 Jul 28  2023 Photoprism
+drwxr-xr-x.  6 100998 100998 4096 Jun 16  2023 PhotoprismDB
+drwxr-xr-x.  2 morla  morla     6 May  8  2023 Photoview
+drwxr-xr-x.  4 100910 100910   52 May  8  2023 PhotoviewDB
+drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
+...
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h5>Podman unshare</h5>
+                        <pre data-id="code-animation"><code class="bash" data-trim data-line-numbers="|1,2|3-6|7-14">
+                        [morla@morla ~]$ touch ~/Config/PhotoviewDB/test
+                        touch: cannot touch '/home/morla/Config/PhotoviewDB/test': Permission denied
+                        [morla@morla ~]$ podman unshare
+                        [root@morla ~]# touch ~/Config/PhotoviewDB/test
+                        [root@morla ~]# ^D
+                        exit
+                        [morla@morla ~]$ ls -la ~/Config/PhotoviewDB
+                        total 12
+                        drwxr-xr-x.  4 100910 100910   64 Jan 30 15:27 .
+                        drwxr-xr-x. 50 morla  morla  4096 Dec 15 18:47 ..
+                        -rw-r--r--.  1 100910 100910 3798 May  8  2023 custom.cnf
+                        drwxr-xr-x.  6 100910 100910 4096 May  9  2023 databases
+                        drwxr-xr-x.  3 100910 100910   19 May  8  2023 log
+                        -rw-r--r--.  1 morla  morla     0 Jan 30 15:27 test
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Root Outside</th>
+                                <th>
+                                    User Outside
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Root Inside</td>
+                                <td>
+                                    <small>
+                                    <span class="fragment semi-fade-out" data-fragment-index="1">
+                                        <code># whoami</code>
+                                        <br/>
+                                        <code>root</code>
+                                        <br/>
+                                        <br/>
+                                        <code># podman run -it fedora whoami</code>
+                                        <br/>
+                                        <code>root</code>
+                                    </span>
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>
+                                    <span class="fragment highlight-green" data-fragment-index="2">
+                                        <code>$ whoami</code>
+                                        <br/>
+                                        <code>morla</code>
+                                        <br/>
+                                        <br/>
+                                        <code>$ podman run -it fedora whoami</code>
+                                        <br/>
+                                        <code>root</code>
+                                    </span>
+                                    </small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>User Inside</td>
+                                <td>
+                                    <small>
+                                    <span class="fragment semi-fade-out" data-fragment-index="1">
+                                        <code># whoami</code>
+                                        <br/>
+                                        <code>root</code>
+                                        <br/>
+                                        <br/>
+                                        <code># podman run -itu sync fedora whoami</code>
+                                        <br/>
+                                        <code>sync</code>
+                                    </span>
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>
+                                    <span class="fragment highlight-red" data-fragment-index="3">
+                                        <code>$ whoami</code>
+                                        <br/>
+                                        <code>morla</code>
+                                        <br/>
+                                        <br/>
+                                        <code>$ podman run -itu sync fedora whoami</code>
+                                        <br/>
+                                        <code>sync</code>
+                                    </span>
+                                    </small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </section>
+                <section>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>User Outside</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Root Inside</td>
+                                <td>
+                                    <small>
+                                        <code>$ id</code>
+                                        <br/>
+                                        <code>uid=1000(morla) ...</code>
+                                        <br/>
+                                        <br/>
+                                        <code>$ podman run -id fedora bash </code>
+                                        <br/>
+                                        <code>6175d5d...</code>
+                                        <br/>
+                                        <br/>
+                                        <code>$ podman top --latest huser user</code>
+                                        <br/>
+                                        <span class="fragment highlight-green" data-fragment-index="1">
+                                        <code>HUSER       USER</code>
+                                        <br/>
+                                        <code>1000        root</code>
+                                        </span>
+                                    </small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>User Inside</td>
+                                <td>
+                                    <small>
+                                        <code>$ id</code>
+                                        <br/>
+                                        <code>uid=1000(morla) ...</code>
+                                        <br/>
+                                        <br/>
+                                        <code>$ podman run -idu sync fedora bash </code>
+                                        <br/>
+                                        <code>3103607...</code>
+                                        <br/>
+                                        <br/>
+                                        <code>$ podman top --latest huser user</code>
+                                        <br/>
+                                        <span class="fragment highlight-red" data-fragment-index="1">
+                                        <code>HUSER       USER</code>
+                                        <br/>
+                                        <code>100998      sync</code>
+                                        </span>
+                                    </small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </section>
+                <section>
+                    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>podman run --uidmap=</code></h5>
+                    </section>
+                    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>podman run --uidmap=</code></h5>
+                        <div class="r-hstack justify-center">
+                            <div data-id="box1" data-auto-animate-delay="0"
+                                style="background: #6c71c4; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0" style="color: #fdf6e3; text-align: center; line-height:280px;">$uid</code>
+                            </div>
+                            :
+                            <div data-id="box2" data-auto-animate-delay="0.1"
+                                style="background: #cb4b16; width: 300px; height: 300px; margin: 10px; border-radius: 200px">
+                                <code data-auto-animate-delay="0.1" style="color: #fdf6e3; text-align: center; line-height:280px;">0</code>
+                            </div>
+                            :
+                            <div data-id="box3" data-auto-animate-delay="0.2"
+                                style="background: #b58900; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0.2" style="color: #fdf6e3; text-align: center; line-height:280px;">1</code>
+                            </div>
+                        </div>
+                    </section>
+                    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>podman run --uidmap</code></h5>
+                        <div class="r-hstack justify-center">
+                            <div data-id="box2" data-auto-animate-delay="0"
+                                style="background: #cb4b16; width: 300px; height: 300px; margin: 10px; border-radius: 200px">
+                                <code data-auto-animate-delay="0" style="color: #fdf6e3; text-align: center; line-height:280px;">0</code>
+                            </div>
+                            :
+                            <div data-id="box3" data-auto-animate-delay="0.1"
+                                style="background: #b58900; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0.1" style="color: #fdf6e3; text-align: center; line-height:280px;">1</code>
+                            </div>
+                            :
+                            <div data-id="box1" data-auto-animate-delay="0.2"
+                                style="background: #6c71c4; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0.2" style="color: #fdf6e3; text-align: center; line-height:280px;">$uid</code>
+                            </div>
+                        </div>
+                    </section>
+                    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>podman run --uidmap</code></h5>
+                        <div class="r-hstack justify-center">
+                            <div data-id="box3" data-auto-animate-delay="0"
+                                style="background: #b58900; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0" style="color: #fdf6e3; text-align: center; line-height:280px;">1</code>
+                            </div>
+                            :
+                            <div data-id="box1" data-auto-animate-delay="0.1"
+                                style="background: #6c71c4; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0.1" style="color: #fdf6e3; text-align: center; line-height:280px;">$uid</code>
+                            </div>
+                            :
+                            <div data-id="box2" data-auto-animate-delay="0.2"
+                                style="background: #cb4b16; width: 300px; height: 300px; margin: 10px; border-radius: 200px">
+                                <code data-auto-animate-delay="0.2" style="color: #fdf6e3; text-align: center; line-height:280px;">0</code>
+                            </div>
+                        </div>
+                    </section>
+                    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+                        <h5><code>podman run --uidmap</code></h5>
+                        <div class="r-hstack justify-center">
+                            <div data-id="box3" data-auto-animate-delay="0"
+                                style="background: #b58900; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0" style="color: #fdf6e3; text-align: center; line-height:280px;">$uid+1</code>
+                            </div>
+                            :
+                            <div data-id="box1" data-auto-animate-delay="0.1"
+                                style="background: #6c71c4; width: 300px; height: 300px; margin: 10px; border-radius: 200px;">
+                                <code data-auto-animate-delay="0.1" style="color: #fdf6e3; text-align: center; line-height:280px;">$uid+1</code>
+                            </div>
+                            :
+                            <div data-id="box2" data-auto-animate-delay="0.2"
+                                style="background: #cb4b16; width: 300px; height: 300px; margin: 10px; border-radius: 200px">
+                                <code data-auto-animate-delay="0.2" style="color: #fdf6e3; text-align: center; line-height:280px">$sSize-$uid</code>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h5>Let's run it</h5>
+                        <pre data-id="code-animation"><code data-trim data-line-numbers>
+                        $ podman run \
+                        --uidmap=911:0:1 \
+                        --uidmap=0:1:911 \
+                        --uidmap:912:912:64625 ...</code> </pre>
+                        <h5>Inside the container you see this</h5>
+                        <pre data-id="code-animation"><code data-trim data-line-numbers>
+    $ podman exec -it morla-piwigo cat /proc/self/uid_map
+    911          0          1
+      0          1        911
+    912        912      64625
+                        </code></pre>
+                        <h5>And outside you see this</h5>
+                        <pre data-id="code-animation"><code data-trim data-line-numbers>
+    drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
+    drwxr-xr-x.  4 morla  morla    52 Feb  9  2023 PiwigoDB
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <h3>Why is Ansible convenient?</h3>
+                </section>
+                <section>
+					<pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|7-10" >
+                    - name: Create pod
+                      containers.podman.podman_pod:
+                          name: '{{ morla_piwigo_pod_name }}'
+                          network: morla-wireguard-network
+                          ports: '{{ morla_piwigo_ports }}'
+                          label: '{{ morla_piwigo_labels }}'
+                          uidmap:
+                              - '{{ morla_fake_puid }}:0:1'
+                              - 0:1:{{ morla_fake_puid }}
+                              - '{{ morla_fake_puid + 1 }}:{{ morla_fake_puid + 1 }}:{{ morla_subuid_size - morla_fake_puid }}'
+                          gidmap:
+                              - '{{ morla_fake_pgid }}:0:1'
+                              - 0:1:{{ morla_fake_pgid }}
+                              - '{{ morla_fake_pgid + 1 }}:{{ morla_fake_pgid + 1 }}:{{ morla_subgid_size - morla_fake_pgid }}'
+                          generate_systemd:
+                              path: '{{ morla_home_config_systemd_dir }}'
+                              restart_policy: always
+                              names: true
+                              pod_prefix: '{{ morla_systemd_service_pod_prefix }}'
+                          state: started
+                    </code></pre>
+                </section>
+                <section>
+                    <h5>I can manage the deployment with tags very conveniently</h5>
+					<pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|1,2|3,4" >
+                    # run the whole setup
+                    ansible-playbook server.yml -K
+                    # run only some tags
+                    ansible-playbook server.yml \
+                        --tags=setup-nginx,setup-firewall,setup-systemd -K
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Takeaways</h3>
+                    <ul>
+                        <li>go rootless</li>
+                        <li>automate your stuff</li>
+                        <li></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Thank you</h3>
+                    <ul>
+                        <li>
+                            Repo: <a href="https://codeberg.org/inknos/morla">codeberg.org/inknos/morla</a>
+                        </li>
+                        <br>
+                        <li>
+                            Nicola Sella
+                        </li>
+                        <li>
+                            Matrix: <a href="https://matrix.to/#/@inknos:snag.social">@inknos:snag.social</a> or
+                            <a href="https://matrix.to/#/@nsella:fedora.im">@nsella:fedora.im</a>
+                        </li>
+                        <li>
+                            Mastodon: <a href="https://fosstodon.org/@inknos">@inknos@fosstodon.org</a>
+                        </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>References</h3>
+                    <ul>
+                        <li>
+                            <a href="https://www.redhat.com/en/blog/understanding-root-inside-and-outside-container">
+                                Understanding root inside and outside a container
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.redhat.com/sysadmin/rootless-podman-user-namespace-modes">
+                                Understanding rootless Podman's user namespace modes
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.tutorialworks.com/podman-rootless-volumes/">
+                                Using volumes with rootless podman, explained
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://docs.podman.io/en/latest/markdown/podman-run.1.html">
+                                <code> man podman-run</code>
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+
+
+
 			</div>
 		</div>
 
@@ -25,12 +540,26 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script type="text/javascript">
+            // 3. On Reveal.js ready event, copy header/footer <div> into each `.slide-background` <div>
+            var header = $('#header').html();
+            if ( window.location.search.match( /print-pdf/gi ) ) {
+                Reveal.addEventListener( 'ready', function( event ) {
+                    $('.slide-background').append(header);
+                });
+            }
+            else {
+                $('div.reveal').append(header);
+           }
+        </script>
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
 			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
+                slideNumber: true,
 
 				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
