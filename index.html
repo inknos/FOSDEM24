@@ -49,7 +49,7 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-                    <h3>Juggling with UIDs and GIDs</h3>
+                    <h5>Juggling with UIDs and GIDs</h5>
                     <h5>rootless container deployment with Ansible</h5>
                     <p><small>Nicola Sella</small></p>
                 </section>
@@ -63,7 +63,7 @@
                         </ul>
                     </section>
 				    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
-                        <h3>Meet my home-server</h3>
+                        <h5>Meet my home-server</h5>
                         <h5><code>morla@morla</code></h5>
                     </section>
 				    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
@@ -82,84 +82,91 @@
                 </section>
                 <section>
                     <section>
-                        <h3>Portainer</h3>
-                        <img data-src="img/portainer.png"/>
+                        <h5>My first setup</h5>
+                        <ul>
+                            <li>Portainer</li>
+                            <li>Docker compose files imported from linuxserver</li>
+                        </ul>
                     </section>
                     <section>
                     <table>
                         <thead>
                             <tr>
-                                <th>Pros</th>
-                                <th>Cons</th>
+                                <th>Requirements</th>
+                                <th>Portainer</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="fragment fade-right">Easy installation<span class="fragment fade-in">?</span></td>
-                                <td class="fragment fade-left">...in some systems</td>
+                                <td>Easy installation</td>
+                                <td>Portainer is easy to install on some systems</td>
                             </tr>
                             <tr>
-                                <td class="fragment fade-right">Supports Docker</td>
-                                <td class="fragment fade-left">Only (at the time)</td>
+                                <td>Rootless</td>
+                                <td>Only supports Docker (at least some time ago)</td>
                             </tr>
                             <tr>
-                                <td class="fragment fade-right">Nice GUI</td>
-                                <td class="fragment fade-left">Heavily dependent on GUI</td>
+                                <td>Not GUI dependent</td>
+                                <td>Heavily dependent on GUI</td>
                             </tr>
                         </tbody>
                     </table>
+                    </section>
+                    <section>
+                        <img data-src="img/portainer.png"/>
                     </section>
                     <section>
                         <h5 data-id="code-title">Linuxserver.io images often have a setup that looks like this</h5>
                         <pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|7,8" >
                         ---
                         services:
-                          jellyfin:
-                            image: lscr.io/linuxserver/jellyfin:latest
-                            container_name: jellyfin
+                          piwigo:
+                            image: lscr.io/linuxserver/piwigo:latest
+                            container_name: piwigo
                             environment:
                               - PUID=1000
                               - PGID=1000
                               - TZ=Etc/UTC
                             volumes:
-                              -  ...
+                              - /path/to/piwigo/config:/config
+                              - /path/to/appdata/gallery:/gallery
                             ports:
-                              - ...
+                              - 80:80
+                            restart: unless-stopped
                         </code></pre>
                         <h5 class="fragment fade-down">Why is that?</h5>
                     </section>
                 </section>
                 <section>
                     <section>
-                        <h5>If we run podman with the same docker-compose files we see this</h5>
+                        <h5>Podman mounts volumes unpleasantly with the root workaround</h5>
                         <pre data-id="code-animation"><code>
-[morla@morla ~]$ ls -l ~/Config
-...
-drwxr-xr-x.  8 morla  morla   103 Jul 28  2023 Photoprism
-drwxr-xr-x.  6 100998 100998 4096 Jun 16  2023 PhotoprismDB
-drwxr-xr-x.  2 morla  morla     6 May  8  2023 Photoview
-drwxr-xr-x.  4 100910 100910   52 May  8  2023 PhotoviewDB
-drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
-...
+[morla@morla ~]$ ls -ld ~/Config/Piwigo
+drwxr-xr-x.  7 100998 100998  83 Feb  9  2023 ~/Piwigo
+                        </code></pre>
+                        This is what I'd like to see:
+                        <pre data-id="code-animation"><code>
+[morla@morla ~]$ ls -ld ~/Config/Piwigo
+drwxr-xr-x.  7 morla morla  83 Feb  9  2023 ~/Piwigo
                         </code></pre>
                     </section>
                     <section>
                         <h5>Podman unshare</h5>
                         <pre data-id="code-animation"><code class="bash" data-trim data-line-numbers="|1,2|3-6|7-14">
-                        [morla@morla ~]$ touch ~/Config/PhotoviewDB/test
-                        touch: cannot touch '/home/morla/Config/PhotoviewDB/test': Permission denied
+                        [morla@morla ~]$ touch ~/Config/Piwigo/test
+                        touch: cannot touch '/home/morla/Config/Piwigo/test': Permission denied
                         [morla@morla ~]$ podman unshare
-                        [root@morla ~]# touch ~/Config/PhotoviewDB/test
+                        [root@morla ~]# touch ~/Config/Piwigo/test
                         [root@morla ~]# ^D
                         exit
-                        [morla@morla ~]$ ls -la ~/Config/PhotoviewDB
-                        total 12
-                        drwxr-xr-x.  4 100910 100910   64 Jan 30 15:27 .
-                        drwxr-xr-x. 50 morla  morla  4096 Dec 15 18:47 ..
-                        -rw-r--r--.  1 100910 100910 3798 May  8  2023 custom.cnf
-                        drwxr-xr-x.  6 100910 100910 4096 May  9  2023 databases
-                        drwxr-xr-x.  3 100910 100910   19 May  8  2023 log
-                        -rw-r--r--.  1 morla  morla     0 Jan 30 15:27 test
+                        [morla@morla ~]$ ls -l ~/Config/Piwigo
+                        total 0
+                        drwxr-xr-x. 2 100998 100998  38 Feb  9  2023 keys
+                        drwxr-xr-x. 4 100998 100998  54 Jun  5  2023 log
+                        drwxrwxr-x. 3 100998 100998 176 May 28  2023 nginx
+                        drwxr-xr-x. 2 100998 100998  44 Feb  9  2023 php
+                        drwxr-xr-x. 8 100998 100998 121 Feb  9  2023 www
+                        -rw-r--r--. 1 morla  morla    0 Jan 30 15:27 test
                         </code></pre>
                     </section>
                 </section>
@@ -718,7 +725,7 @@ morla_wordpress_enabled: true
                     </section>
                 </section>
                 <section>
-                    <h3>Takeaways</h3>
+                    <h5>Takeaways</h5>
                     <ul>
                         <li>Go rootless</li>
                         <li>Automate your stuff</li>
@@ -726,7 +733,7 @@ morla_wordpress_enabled: true
                     </ul>
                 </section>
                 <section>
-                    <h3>Thank you</h3>
+                    <h5>Thank you</h5>
                     <ul>
                         <li>
                             Repo: <a href="https://codeberg.org/inknos/morla">codeberg.org/inknos/morla</a>
@@ -746,7 +753,7 @@ morla_wordpress_enabled: true
                 </section>
 
                 <section>
-                    <h3>References</h3>
+                    <h5>References</h5>
                     <small>
                     <ul>
                         <li>
