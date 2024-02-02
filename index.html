@@ -55,7 +55,7 @@
                 </section>
 				<section>
                     <section>
-                        <h3>Motivation</h3>
+                        <h5>Motivation</h5>
                         <ul>
                             <li class="fragment fade-left">Experimenting with rootles containers in my home-server</li>
                             <li class="fragment fade-left">Automating using Ansible. It's not an overkill</li>
@@ -108,41 +108,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    </section>
-                </section>
-                <section>
-                    <section>
-                        <h3>Move away... but where?</h3>
-                    </section>
-                    <section>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Requirements</th>
-                                    <th>Solution</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="fragment fade-right">Easy installation</td>
-                                    <td class="fragment fade-left">Ansible</td>
-                                </tr>
-                                <tr>
-                                    <td class="fragment fade-right">Rootless</td>
-                                    <td class="fragment fade-left">Podman</td>
-                                </tr>
-                                <tr>
-                                    <td class="fragment fade-right">Not GUI dependent</td>
-                                    <td class="fragment fade-left">well...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                </section>
-                <section>
-                    <section>
-                        <h3>All good, let's set it up...</h3>
-                        <h5 class="fragment fade-right">...but there is one more thing</h5>
                     </section>
                     <section>
                         <h5 data-id="code-title">Linuxserver.io images often have a setup that looks like this</h5>
@@ -199,145 +164,162 @@ drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
                     </section>
                 </section>
                 <section>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Root Outside</th>
-                                <th>
-                                    User Outside
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Root Inside</td>
-                                <td>
-                                    <small>
-                                    <span class="fragment semi-fade-out" data-fragment-index="1">
-                                        <code># whoami</code>
-                                        <br/>
-                                        <code>root</code>
-                                        <br/>
-                                        <br/>
-                                        <code># podman run -it fedora whoami</code>
-                                        <br/>
-                                        <code>root</code>
-                                    </span>
-                                    </small>
-                                </td>
-                                <td>
-                                    <small>
-                                    <span class="fragment highlight-green" data-fragment-index="2">
-                                        <code>$ whoami</code>
-                                        <br/>
-                                        <code>morla</code>
-                                        <br/>
-                                        <br/>
-                                        <code>$ podman run -it fedora whoami</code>
-                                        <br/>
-                                        <code>root</code>
-                                    </span>
-                                    </small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>User Inside</td>
-                                <td>
-                                    <small>
-                                    <span class="fragment semi-fade-out" data-fragment-index="1">
-                                        <code># whoami</code>
-                                        <br/>
-                                        <code>root</code>
-                                        <br/>
-                                        <br/>
-                                        <code># podman run -itu sync fedora whoami</code>
-                                        <br/>
-                                        <code>sync</code>
-                                    </span>
-                                    </small>
-                                </td>
-                                <td>
-                                    <small>
-                                    <span class="fragment highlight-red" data-fragment-index="3">
-                                        <code>$ whoami</code>
-                                        <br/>
-                                        <code>morla</code>
-                                        <br/>
-                                        <br/>
-                                        <code>$ podman run -itu sync fedora whoami</code>
-                                        <br/>
-                                        <code>sync</code>
-                                    </span>
-                                    </small>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Root Outside</th>
+                                    <th>
+                                        User Outside
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Root Inside</td>
+                                    <td>
+                                        <small>
+                                        <span class="fragment semi-fade-out" data-fragment-index="1">
+                                            <code># whoami</code>
+                                            <br/>
+                                            <code>root</code>
+                                            <br/>
+                                            <br/>
+                                            <code># podman run -it fedora whoami</code>
+                                            <br/>
+                                            <code>root</code>
+                                        </span>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                        <span class="fragment highlight-green" data-fragment-index="2">
+                                            <code>$ whoami</code>
+                                            <br/>
+                                            <code>morla</code>
+                                            <br/>
+                                            <br/>
+                                            <code>$ podman run -it fedora whoami</code>
+                                            <br/>
+                                            <code>root</code>
+                                        </span>
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>User Inside</td>
+                                    <td>
+                                        <small>
+                                        <span class="fragment semi-fade-out" data-fragment-index="1">
+                                            <code># whoami</code>
+                                            <br/>
+                                            <code>root</code>
+                                            <br/>
+                                            <br/>
+                                            <code># podman run -itu sync fedora whoami</code>
+                                            <br/>
+                                            <code>sync</code>
+                                        </span>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                        <span class="fragment highlight-red" data-fragment-index="3">
+                                            <code>$ whoami</code>
+                                            <br/>
+                                            <code>morla</code>
+                                            <br/>
+                                            <br/>
+                                            <code>$ podman run -itu sync fedora whoami</code>
+                                            <br/>
+                                            <code>sync</code>
+                                        </span>
+                                        </small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
+                    </section>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>User Outside</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Root Inside</td>
+                                    <td>
+                                        <small>
+                                            <code>$ id</code>
+                                            <br/>
+                                            <code>uid=1000(morla) ...</code>
+                                            <br/>
+                                            <br/>
+                                            <code>$ podman run -id fedora bash </code>
+                                            <br/>
+                                            <code>6175d5d...</code>
+                                            <br/>
+                                            <br/>
+                                            <code>$ podman top --latest huser user</code>
+                                            <br/>
+                                            <span class="fragment highlight-green" data-fragment-index="1">
+                                            <code>HUSER       USER</code>
+                                            <br/>
+                                            <code>1000        root</code>
+                                            </span>
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>User Inside</td>
+                                    <td>
+                                        <small>
+                                            <code>$ id</code>
+                                            <br/>
+                                            <code>uid=1000(morla) ...</code>
+                                            <br/>
+                                            <br/>
+                                            <code>$ podman run -idu sync fedora bash </code>
+                                            <br/>
+                                            <code>3103607...</code>
+                                            <br/>
+                                            <br/>
+                                            <code>$ podman top --latest huser user</code>
+                                            <br/>
+                                            <span class="fragment highlight-red" data-fragment-index="1">
+                                            <code>HUSER       USER</code>
+                                            <br/>
+                                            <code>100998      sync</code>
+                                            </span>
+                                        </small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
                 </section>
                 <section>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>User Outside</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Root Inside</td>
-                                <td>
-                                    <small>
-                                        <code>$ id</code>
-                                        <br/>
-                                        <code>uid=1000(morla) ...</code>
-                                        <br/>
-                                        <br/>
-                                        <code>$ podman run -id fedora bash </code>
-                                        <br/>
-                                        <code>6175d5d...</code>
-                                        <br/>
-                                        <br/>
-                                        <code>$ podman top --latest huser user</code>
-                                        <br/>
-                                        <span class="fragment highlight-green" data-fragment-index="1">
-                                        <code>HUSER       USER</code>
-                                        <br/>
-                                        <code>1000        root</code>
-                                        </span>
-                                    </small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>User Inside</td>
-                                <td>
-                                    <small>
-                                        <code>$ id</code>
-                                        <br/>
-                                        <code>uid=1000(morla) ...</code>
-                                        <br/>
-                                        <br/>
-                                        <code>$ podman run -idu sync fedora bash </code>
-                                        <br/>
-                                        <code>3103607...</code>
-                                        <br/>
-                                        <br/>
-                                        <code>$ podman top --latest huser user</code>
-                                        <br/>
-                                        <span class="fragment highlight-red" data-fragment-index="1">
-                                        <code>HUSER       USER</code>
-                                        <br/>
-                                        <code>100998      sync</code>
-                                        </span>
-                                    </small>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                </section>
-                <section>
+                    <section>
+                        <h5>This is What you could do</h5>
+                        <pre data-id="code-animation"><code data-trim data-line-numbers>
+                        $ podman run \
+                        --uidmap=$uid:0:1 \
+                        --uidmap=0:1:$uid \
+                        --uidmap $(($uid+1)):$(($uid+1)):$(($subuidSize-$uid))</code> </pre>
+                        <small>
+                        <ul>
+                            <li>
+                                Map the UID $uid in the container to your normal UID on the host.</li>
+                            <li>Map the UIDs between 0 and $uid - 1 in the container to the lower part of the subuids (subordinate UIDs) (from $subuidStart to $subuidStart+$uid-1).</li>
+                            <li>Map the UIDs between $uid+1 and $subuidSize in the container to the remaining subuids.</li>
+                        </ul>
+                        </small>
+                    </section>
                     <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
                         <h5><code>podman run --uidmap=</code></h5>
                     </section>
@@ -425,7 +407,7 @@ drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
                         $ podman run \
                         --uidmap=911:0:1 \
                         --uidmap=0:1:911 \
-                        --uidmap:912:912:64625 ...</code> </pre>
+                        --uidmap:912:912:64625</code> </pre>
                         <h5>Inside the container you see this</h5>
                         <pre data-id="code-animation"><code data-trim data-line-numbers>
     $ podman exec -it morla-piwigo cat /proc/self/uid_map
@@ -439,50 +421,308 @@ drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
     drwxr-xr-x.  4 morla  morla    52 Feb  9  2023 PiwigoDB
                         </code></pre>
                     </section>
+                    <section>
+                        <h5>This option should also be supported since podman 4.3.0</h5>
+                        <pre data-id="code-animation"><code data-trim data-line-numbers>
+                         --userns keep-id:uid=$uid,gid=$gid
+                        </code></pre>
+                    </section>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Requirements</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Easy installation</td>
+                                    <td>...</td>
+                                </tr>
+                                <tr>
+                                    <td>Rootless</td>
+                                    <td>Podman</td>
+                                </tr>
+                                <tr>
+                                    <td>Not GUI dependent</td>
+                                    <td>...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
                 </section>
                 <section>
-                    <h3>Why is Ansible convenient?</h3>
-                </section>
                 <section>
-					<pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|7-10" >
-                    - name: Create pod
-                      containers.podman.podman_pod:
-                          name: '{{ morla_piwigo_pod_name }}'
-                          network: morla-wireguard-network
-                          ports: '{{ morla_piwigo_ports }}'
-                          label: '{{ morla_piwigo_labels }}'
-                          uidmap:
-                              - '{{ morla_fake_puid }}:0:1'
-                              - 0:1:{{ morla_fake_puid }}
-                              - '{{ morla_fake_puid + 1 }}:{{ morla_fake_puid + 1 }}:{{ morla_subuid_size - morla_fake_puid }}'
-                          gidmap:
-                              - '{{ morla_fake_pgid }}:0:1'
-                              - 0:1:{{ morla_fake_pgid }}
-                              - '{{ morla_fake_pgid + 1 }}:{{ morla_fake_pgid + 1 }}:{{ morla_subgid_size - morla_fake_pgid }}'
-                          generate_systemd:
-                              path: '{{ morla_home_config_systemd_dir }}'
-                              restart_policy: always
-                              names: true
-                              pod_prefix: '{{ morla_systemd_service_pod_prefix }}'
-                          state: started
+                    <h5>Organized setup with Ansible</h5>
+					<pre data-id="code-animation"><code  data-trim data-line-numbers="|3" >
+roles/morla-piwigo/
+├── defaults
+│   └── main.yml
+└── tasks
+    ├── destroy_piwigo.yml
+    ├── init_flag.yml
+    ├── init.yml
+    ├── main.yml
+    ├── pull_piwigo.yml
+    └── setup_piwigo.yml
+
                     </code></pre>
                 </section>
                 <section>
-                    <h5>I can manage the deployment with tags very conveniently</h5>
-					<pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|1,2|3,4" >
-                    # run the whole setup
-                    ansible-playbook server.yml -K
-                    # run only some tags
-                    ansible-playbook server.yml \
-                        --tags=setup-nginx,setup-firewall,setup-systemd -K
+                    <h5>Main config file</h5>
+					<pre data-id="code-animation"><code  data-trim data-line-numbers="|14-16|24,25|28-30|59-62|71-75|80-82" >
+                    ---
+# SPDX-FileCopyrightText: Nicola Sella
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# configuration file for piwigo
+morla_piwigo_enabled: false
+
+morla_piwigo_flag_public: true
+morla_piwigo_flag_autostart: true
+morla_piwigo_flag_wireguard: true
+morla_piwigo_flag_firewall: true # replace with if port list non empty
+
+# Name
+morla_piwigo_long_name: Piwigo
+morla_piwigo_short_name: piwigo
+
+morla_piwigo_container_short_name: '{{ morla_piwigo_short_name }}'
+morla_piwigo_container_name: '{{ morla_user_username }}-{{ morla_piwigo_container_short_name }}'
+morla_piwigo_public_url: '{{ morla_piwigo_short_name }}.{{ morla_public_url }}'
+
+morla_piwigo_pod_name: '{{ morla_piwigo_container_name }}-pod'
+
+morla_piwigo_container_image_base: lscr.io/linuxserver/piwigo
+morla_piwigo_container_image_tag: latest
+morla_piwigo_container_image: '{{ morla_piwigo_container_image_base }}:{{ morla_piwigo_container_image_tag }}'
+
+# Networking
+morla_piwigo_reverse_proxy_port: '5050'
+morla_piwigo_exposed_proxy_port: '80'
+
+# Networking/Firewall
+morla_piwigo_fw_ports:
+    tcp:
+        - '{{ morla_piwigo_reverse_proxy_port }}'
+    udp:
+
+# Networking/Port Forwarding
+morla_piwigo_ports:
+    - '{{ morla_piwigo_reverse_proxy_port }}:{{ morla_piwigo_exposed_proxy_port }}'
+
+# Storage/Host
+morla_piwigo_config_dir: '{{ morla_config_dir }}/{{ morla_piwigo_long_name }}'
+
+# Storage/Mount
+morla_piwigo_volumes:
+    - '{{ morla_piwigo_config_dir }}:/config:Z'
+    - '{{ morla_media_dir }}/pictures/Piwigo:/gallery:z'
+
+# Labels/Traefik
+morla_piwigo_labels:
+    traefik.enable: '{{ morla_piwigo_flag_public }}'
+    traefik.http.services.piwigo.loadbalancer.server.port: '{{ morla_piwigo_exposed_proxy_port }}'
+    traefik.http.routers.piwigo.tls: true
+    traefik.http.routers.piwigo.rule: Host(`{{ morla_piwigo_public_url }}`)
+    traefik.http.routers.piwigo.entrypoints: websecure
+    traefik.http.routers.piwigo.tls.certresolver: myresolver
+
+# DB
+# Name
+morla_piwigo_db_long_name: PiwigoDB
+morla_piwigo_db_short_name: piwigo-db
+
+morla_piwigo_db_container_short_name: '{{ morla_piwigo_db_short_name }}'
+morla_piwigo_db_container_name: '{{ morla_user_username }}-{{ morla_piwigo_db_container_short_name }}'
+
+morla_piwigo_db_container_image_base: lscr.io/linuxserver/mariadb
+morla_piwigo_db_container_image_tag: 10.6.10
+morla_piwigo_db_container_image: '{{ morla_piwigo_db_container_image_base }}:{{ morla_piwigo_db_container_image_tag }}'
+
+# Environment
+morla_piwigo_db_env_mysql_user: piwigo
+morla_piwigo_db_env_mysql_password: '{{ morla_piwigo_db_password }}'
+morla_piwigo_db_env_mysql_database: piwigo-db
+morla_piwigo_db_env_mysql_random_root_password: true
+
+# Storage/Host
+morla_piwigo_db_config_dir: '{{ morla_config_dir }}/{{ morla_piwigo_db_long_name }}'
+
+# Storage/Mount
+morla_piwigo_db_volumes:
+    - '{{ morla_piwigo_db_config_dir }}:/config:Z'
                     </code></pre>
+                </section>
+                <section>
+                    <h5>Setup</h5>
+					<pre data-id="code-animation"><code  data-trim data-line-numbers="|10" >
+roles/morla-piwigo/
+├── defaults
+│   └── main.yml
+└── tasks
+    ├── destroy_piwigo.yml
+    ├── init_flag.yml
+    ├── init.yml
+    ├── main.yml
+    ├── pull_piwigo.yml
+    └── setup_piwigo.yml
+
+                    </code></pre>
+                </section>
+                <section>
+                    <h5>Scripting? What is that?</h5>
+					<pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|2-8|24-31|39-49" >
+---
+    - name: Create config directory
+      ansible.builtin.file:
+          path: '{{ morla_piwigo_config_dir }}'
+          state: directory
+          owner: '{{ morla_user_username }}'
+          group: '{{ morla_user_groupname }}'
+      when: not check_piwigo_config_dir.stat.exists
+
+    - name: Create DB config directory
+      ansible.builtin.file:
+          path: '{{ morla_piwigo_db_config_dir }}'
+          state: directory
+          owner: '{{ morla_user_username }}'
+          group: '{{ morla_user_groupname }}'
+      when: not check_piwigo_db_config_dir.stat.exists
+
+    - name: Create pod
+      containers.podman.podman_pod:
+          name: '{{ morla_piwigo_pod_name }}'
+          network: morla-wireguard-network
+          ports: '{{ morla_piwigo_ports }}'
+          label: '{{ morla_piwigo_labels }}'
+          uidmap:
+              - '{{ morla_fake_puid }}:0:1'
+              - 0:1:{{ morla_fake_puid }}
+              - '{{ morla_fake_puid + 1 }}:{{ morla_fake_puid + 1 }}:{{ morla_subuid_size - morla_fake_puid }}'
+          gidmap:
+              - '{{ morla_fake_pgid }}:0:1'
+              - 0:1:{{ morla_fake_pgid }}
+              - '{{ morla_fake_pgid + 1 }}:{{ morla_fake_pgid + 1 }}:{{ morla_subgid_size - morla_fake_pgid }}'
+          generate_systemd:
+              path: '{{ morla_home_config_systemd_dir }}'
+              restart_policy: always
+              names: true
+              pod_prefix: '{{ morla_systemd_service_pod_prefix }}'
+          state: started
+
+    - name: Create container
+      containers.podman.podman_container:
+          name: '{{ morla_piwigo_container_name }}'
+          image: '{{ morla_piwigo_container_image}}'
+          pod: '{{ morla_piwigo_pod_name }}'
+          volumes: '{{ morla_piwigo_volumes }}'
+          env:
+              PUID: '{{ morla_fake_puid }}'
+              PGID: '{{ morla_fake_pgid }}'
+              TZ: '{{ morla_tz }}'
+          state: started
+
+    - name: Create Database
+      containers.podman.podman_container:
+          name: '{{ morla_piwigo_db_container_name }}'
+          image: '{{ morla_piwigo_db_container_image }}'
+          pod: '{{ morla_piwigo_pod_name }}'
+          network: container:morla-piwigo
+          volumes: '{{ morla_piwigo_db_volumes }}'
+          env:
+              PUID: '{{ morla_fake_puid }}'
+              PGID: '{{ morla_fake_pgid }}'
+              TZ: '{{ morla_tz }}'
+              MYSQL_USER: '{{ morla_piwigo_db_env_mysql_user }}'
+              MYSQL_PASSWORD: '{{ morla_piwigo_db_env_mysql_password }}'
+              MYSQL_DATABASE: '{{ morla_piwigo_db_env_mysql_database }}'
+              MYSQL_RANDOM_ROOT_PASSWORD: '{{ morla_piwigo_db_env_mysql_random_root_password }}'
+          state: started
+                    </code></pre>
+                </section>
+                </section>
+                <section>
+                    <h5>"Control Panel"</h5>
+					<pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|12" >
+# inventory/vars.yml
+
+# enabled services
+morla_coredns_enabled: true
+morla_discord_soundboard_bot_enabled: true
+morla_filebrowser_enabled: true
+morla_gandi_ddns_enabled: true
+morla_ipfs_enabled: true
+morla_jellyfin_enabled: true
+morla_lidarr_enabled: true
+morla_navidrome_enabled: true
+morla_piwigo_enabled: true
+morla_prowlarr_enabled: true
+morla_pyload_ng_enabled: true
+morla_qbittorrent_enabled: true
+morla_radarr_enabled: true
+morla_readarr_enabled: true
+morla_sonarr_enabled: true
+morla_syncthing_enabled: true
+morla_transfersh_enabled: true
+morla_wireguard_enabled: true
+morla_wordpress_enabled: true
+                    </code></pre>
+                </section>
+                <section>
+                    <section>
+                        <h5>Check that everything is up and running<h5/>
+                        <img src="img/ansible_run_1.png">
+                    </section>
+                    <section>
+                        <h5>Check that everything is up and running<h5/>
+                        <img src="img/ansible_run_2.png">
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h5>I can manage the deployment with tags very conveniently</h5>
+                        <pre data-id="code-animation"><code class="yaml" data-trim data-line-numbers="|1,2|3,4" >
+                        # run the whole setup
+                        ansible-playbook server.yml -K
+                        # run only some tags
+                        ansible-playbook server.yml \
+                            --tags=setup-nginx,setup-firewall,setup-systemd -K
+                        </code></pre>
+                    </section>
+                    <section>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Requirements</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Easy installation</td>
+                                    <td>Ansible</td>
+                                </tr>
+                                <tr>
+                                    <td>Rootless</td>
+                                    <td>Podman</td>
+                                </tr>
+                                <tr>
+                                    <td>Not GUI dependent</td>
+                                    <td>Well...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
                 </section>
                 <section>
                     <h3>Takeaways</h3>
                     <ul>
-                        <li>go rootless</li>
-                        <li>automate your stuff</li>
-                        <li></li>
+                        <li>Go rootless</li>
+                        <li>Automate your stuff</li>
+                        <li>Overcomplicate to oversimplify</li>
                     </ul>
                 </section>
                 <section>
@@ -507,6 +747,7 @@ drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
 
                 <section>
                     <h3>References</h3>
+                    <small>
                     <ul>
                         <li>
                             <a href="https://www.redhat.com/en/blog/understanding-root-inside-and-outside-container">
@@ -524,11 +765,22 @@ drwxr-xr-x.  7 morla  morla    83 Feb  9  2023 Piwigo
                             </a>
                         </li>
                         <li>
+                            <a href="https://stackoverflow.com/questions/70770437/mapping-of-user-ids">
+                                Mapping of user Id's on Stackoverflow
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/containers/podman/blob/main/troubleshooting.md#34-container-creates-a-file-that-is-not-owned-by-the-users-regular-uid">
+                                Podman's Troubleshooting doc: 34) Container creates a file that is not owned by the user's regular UID
+                            </a>
+                        </li>
+                        <li>
                             <a href="https://docs.podman.io/en/latest/markdown/podman-run.1.html">
                                 <code> man podman-run</code>
                             </a>
                         </li>
                     </ul>
+                    </small>
                 </section>
 
 
